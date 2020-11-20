@@ -26,7 +26,7 @@ export default {
           // 图表的配置项和数据
           var option = {
             title: {
-              text: "销量"
+              text: "数量"
             },
             tooltip: {},
             legend: {
@@ -35,12 +35,14 @@ export default {
             xAxis: {
               data: this.list.map(item=>item.catename),
             },
-            yAxis: {},
+            yAxis: {
+               type: 'value'
+            },
             //series数据
             series: [
               {
                 name: "子分类数量",
-                type: "bar",
+                type: "line",
                 data:this.list.map(item=>item.children?item.children.length:0)
               },
             ]

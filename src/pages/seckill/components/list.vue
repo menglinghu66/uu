@@ -7,18 +7,18 @@
       border
       :tree-props="{children: 'children'}"
     >
-      <el-table-column prop="uid" label="用户编号" sortable></el-table-column>
-      <el-table-column prop="nickname" label="昵称" sortable></el-table-column>
-      <el-table-column prop="phone" label="手机号" sortable></el-table-column>
+      <el-table-column prop="title" label="活动名称" sortable></el-table-column>
 
       <el-table-column label="状态">
         <template slot-scope="scope">
           <el-button type="primary" v-if="scope.row.status===1">启用</el-button>
+          <el-button type="info" v-else>禁用</el-button>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" @click="edit(scope.row.uid)">编辑</el-button>
+          <el-button type="primary" @click="edit(scope.row.id)">编辑</el-button>
+          <del-btn @confirm="del(scope.row.id)"></del-btn>
         </template>
       </el-table-column>
     </el-table>
@@ -26,24 +26,28 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { reqseckDel } from "../../../utils/http";
 import { successAlert } from "../../../utils/alert";
 export default {
+  props: ["list"],
   computed: {
-    ...mapGetters({
-         list: "vip/list",
-    }),
+    ...mapGetters({}),
   },
   methods: {
-    ...mapActions({
-         reqList: "vip/reqList",
-    }),
-      edit(uid) {
-      this.$emit("edit", uid);
+    ...mapActions({}),
+    del(id) {
+      reqseckDel(id).then((res) => {
+        if (res.data.code == 200) {
+          successAlert(res.data.msg);
+          this.$emit("init");
+        }
+      });
+    },
+    edit(id){
+      this.$emit("edit",id)
     }
   },
-  mounted() {
-       this.reqList();
-  },
+  mounted() {},
 };
 </script>
 <style>

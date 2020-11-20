@@ -37,7 +37,7 @@
       ></el-pagination>
   </div>
   </div>
-</template>
+</template>  
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { reqspecsDel } from "../../../utils/http";

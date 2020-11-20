@@ -2,11 +2,11 @@
   <div>
     <!-- 绑定info.isshow到模板 -->
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="form">
-        <el-form-item label="菜单名称" label-width="120px">
+      <el-form :model="form" :rules="rules">
+        <el-form-item label="菜单名称" label-width="120px" prop="title">
           <el-input v-model="form.title" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="上级菜单" label-width="120px">
+        <el-form-item label="上级菜单" label-width="120px" prop="pid">
           <el-select v-model="form.pid" placeholder="请选择" @change="changePid">
             <el-option label="顶级菜单" :value="0"></el-option>
             <!-- list遍历 -->
@@ -67,6 +67,10 @@ export default {
         "el-icon-s-help",
         "el-icon-s-operation",
       ],
+      rules: {
+        title: [{ required: true, message: "请输入菜单名称", trigger: "blur" }],
+        pid: [{ required: true, message: "请输入菜单", trigger: "change" }],
+      },
       //定义routes
       routes: routes,
       //初始化form,并通过v-model绑定数据到模板
@@ -87,6 +91,18 @@ export default {
     ...mapActions({}),
     cancel() {
       this.info.isshow = false;
+    },
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.title === "") {
+          errorAlert("菜单名称为空");
+          return;
+        }
+        if (this.user.pid === "") {
+          errorAlert("菜单为空");
+          return;
+        }
+      });
     },
     //上级菜单发生了修改
     changePid() {
@@ -110,20 +126,22 @@ export default {
     },
     //点击了添加按钮
     add() {
-      //发起添加的请求
-      reqMenuAdd(this.form).then((res) => {
-        if (res.data.code === 200) {
-          //弹个成功
-          successAlert("添加成功");
-          //弹框消失
-          this.cancel();
-          //form置空
-          this.empty();
-          //通知menu刷新列表数据
-          this.$emit("init");
-        } else {
-          errorAlert(res.data.msg);
-        }
+      this.check().then(() => {
+        //发起添加的请求
+        reqMenuAdd(this.form).then((res) => {
+          if (res.data.code === 200) {
+            //弹个成功
+            successAlert("添加成功");
+            //弹框消失
+            this.cancel();
+            //form置空
+            this.empty();
+            //通知menu刷新列表数据
+            this.$emit("init");
+          } else {
+            errorAlert(res.data.msg);
+          }
+        });
       });
     },
     //获取一条数据
@@ -137,19 +155,21 @@ export default {
     },
     //点了修改
     update() {
-      reqMenuUpdate(this.form).then((res) => {
-        if (res.data.code === 200) {
-          //成功弹框
-          successAlert("修改成功");
-          //弹框消失
-          this.cancel();
-          //form重置
-          this.empty();
-          //列表刷新
-          this.$emit("init");
-        } else {
-          errorAlert(res.data.msg);
-        }
+      this.check().then(() => {
+        reqMenuUpdate(this.form).then((res) => {
+          if (res.data.code === 200) {
+            //成功弹框
+            successAlert("修改成功");
+            //弹框消失
+            this.cancel();
+            //form重置
+            this.empty();
+            //列表刷新
+            this.$emit("init");
+          } else {
+            errorAlert(res.data.msg);
+          }
+        });
       });
     },
     //弹框消失

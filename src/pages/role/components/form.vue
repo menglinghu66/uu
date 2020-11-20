@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="user">
-        <el-form-item label="角色名称" label-width="120px">
+      <el-form :model="user" :rules="rules">
+        <el-form-item label="角色名称" label-width="120px" prop="rolename">
           <el-input v-model="user.rolename" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="角色权限" label-width="120px">
@@ -46,6 +46,11 @@ export default {
         status: 1,
       },
       menuList: [],
+      rules: {
+        rolename: [
+          { required: true, message: "请输入角色名称", trigger: "blur" },
+        ],
+      },
     };
   },
   computed: {
@@ -56,6 +61,14 @@ export default {
     cancel() {
       this.info.isshow = false;
     },
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.rolename === "") {
+          errorAlert("角色名称为空");
+          return;
+        }
+      });
+    },
     empty() {
       this.user = {
         rolename: "",
@@ -65,15 +78,17 @@ export default {
       this.$refs.tree.setCheckedKeys([]);
     },
     add() {
-      this.user.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
+      this.check().then(() => {
+        this.user.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
 
-      reqRoleAdd(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("添加成功");
-          this.cancel();
-          this.empty();
-          this.$emit("init");
-        }
+        reqRoleAdd(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("添加成功");
+            this.cancel();
+            this.empty();
+            this.$emit("init");
+          }
+        });
       });
     },
     getOne(id) {
@@ -84,14 +99,16 @@ export default {
       });
     },
     update() {
-      this.user.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
-      reqRoleUpdate(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("修改成功");
-          this.cancel();
-          this.empty();
-          this.$emit("init");
-        }
+      this.check().then(() => {
+        this.user.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
+        reqRoleUpdate(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("修改成功");
+            this.cancel();
+            this.empty();
+            this.$emit("init");
+          }
+        });
       });
     },
     //

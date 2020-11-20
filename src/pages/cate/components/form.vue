@@ -1,8 +1,8 @@
 <template>
   <div class="add">
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="user">
-        <el-form-item label="上级分类" label-width="120px">
+      <el-form :model="user" :rules="rules">
+        <el-form-item label="上级分类" label-width="120px" prop="pid">
           <el-select v-model="user.pid" placeholder="请选择">
             <el-option :value="0" label="顶级分类"></el-option>
             <el-option
@@ -13,7 +13,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="分类名称" label-width="120px">
+        <el-form-item label="分类名称" label-width="120px" prop="catename">
           <el-input v-model="user.catename" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图片" label-width="120px" v-if="user.pid!==0">
@@ -66,6 +66,12 @@ export default {
         status: 1,
       },
       imgUrl: "",
+      rules: {
+        pid: [{ required: true, message: "请输入一级分类", trigger: "change" }],
+        catename: [
+          { required: true, message: "请输入分类名称", trigger: "blur" },
+        ],
+      },
     };
   },
   computed: {
@@ -102,6 +108,18 @@ export default {
     ...mapActions({
       reqList: "cate/reqList",
     }),
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.pid === "") {
+          errorAlert("y一级分类为空");
+          return;
+        }
+        if (this.user.catename === "") {
+          errorAlert("分类为空");
+          return;
+        }
+      });
+    },
     cancel() {
       this.info.isshow = false;
     },
@@ -115,15 +133,17 @@ export default {
       this.imgUrl = "";
     },
     add() {
-      console.log(this.user);
-      reqcateAdd(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("添加成功");
-          this.cancel();
-          this.empty();
-          // this.$emit("init");
-          this.reqList();
-        }
+      this.check().then(() => {
+        console.log(this.user);
+        reqcateAdd(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("添加成功");
+            this.cancel();
+            this.empty();
+            // this.$emit("init");
+            this.reqList();
+          }
+        });
       });
     },
     getOne(id) {
@@ -135,13 +155,15 @@ export default {
       });
     },
     update() {
-      reqcateUpdate(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("修改成功");
-          this.cancel();
-          this.empty();
-          this.reqList();
-        }
+      this.check().then(() => {
+        reqcateUpdate(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("修改成功");
+            this.cancel();
+            this.empty();
+            this.reqList();
+          }
+        });
       });
     },
     //
@@ -168,6 +190,7 @@ export default {
   border: 1px dashed #ccc;
   position: relative;
 }
+
 .myupload h3 {
   width: 100%;
   height: 100px;
@@ -177,6 +200,7 @@ export default {
   color: #666;
   font-weight: 100;
 }
+
 .myupload .ipt {
   width: 100px;
   height: 100px;
@@ -185,6 +209,7 @@ export default {
   top: 0;
   opacity: 0;
 }
+
 .myupload .img {
   width: 100px;
   height: 100px;
@@ -192,6 +217,7 @@ export default {
   left: 0;
   top: 0;
 }
+
 .add >>> .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -199,9 +225,11 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409EFF;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -210,6 +238,7 @@ export default {
   line-height: 178px;
   text-align: center;
 }
+
 .avatar {
   width: 178px;
   height: 178px;

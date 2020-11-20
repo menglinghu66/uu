@@ -1,4 +1,4 @@
-import { reqgoodsList, reqgoodsCount } from "../../utils/http"
+import { reqseckList, reqgoodsCount } from "../../utils/http"
 const state = {
     list: [],
     total: 0,
@@ -20,7 +20,7 @@ const mutations = {
 const actions = {
     reqList(context, bool) {
         let obj = bool ? bool : { page: context.state.page, size: context.state.size }
-        reqgoodsList(obj).then(res => {
+        reqseckList(obj).then(res => {
             let list = res.data.list ? res.data.list : []
 
             if (list.length == 0 && context.state.page > 1) {

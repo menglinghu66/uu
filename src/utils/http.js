@@ -403,3 +403,145 @@ export const reqgoodsCount = () => {
     //商品管理结束
 
 //会员管理 开始
+
+//列表
+export const reqmemberlist = () => {
+        return axios({
+            url: baseUrl + "/api/memberlist",
+            method: "get",
+
+        })
+    }
+    //详情
+export const reqmemberDetail = uid => {
+        return axios({
+            url: baseUrl + "/api/memberinfo",
+            method: "get",
+            params: {
+                uid: uid
+            }
+        })
+    }
+    //修改
+export const reqmemberUpdate = (user) => {
+
+    return axios({
+        url: baseUrl + "/api/memberedit",
+        method: "post",
+        data: qs.stringify(user)
+    })
+}
+
+//轮播图
+export const reqBannerList = (p) => {
+
+        return axios({
+            url: baseUrl + "/api/bannerlist",
+            method: "get",
+            params: p
+        })
+    }
+    //详情
+export const reqBannerDetail = (id) => {
+
+        return axios({
+            url: baseUrl + "/api/bannerinfo",
+            method: "get",
+            params: {
+                id: id
+            }
+        })
+    }
+    //更新
+export const reqBannerUpdate = (user) => {
+        let d = new FormData()
+        for (let i in user) {
+            d.append(i, user[i])
+        }
+        return axios({
+            url: baseUrl + "/api/banneredit",
+            method: "post",
+            data: d
+        })
+    }
+    //删除
+export const reqBannerDel = (id) => {
+
+    return axios({
+        url: baseUrl + "/api/bannerdelete",
+        method: "post",
+        params: {
+            id: id
+        }
+    })
+}
+
+//添加 文件
+export const reqBannerAdd = (user) => {
+        console.log(user)
+        let d = new FormData()
+        for (let i in user) {
+            d.append(i, user[i])
+        }
+        return axios({
+            url: baseUrl + '/api/banneradd',
+            method: 'post',
+            data: d
+        })
+    }
+    //轮播结束
+
+//秒杀活动 
+//添加
+export const reqseckAdd = (user) => {
+    return axios({
+        url: baseUrl + "/api/seckadd",
+        method: "post",
+        data: user
+    })
+}
+
+//列表
+export const reqseckList = (p) => {
+    return axios({
+        url: baseUrl + "/api/secklist",
+        method: "get",
+        params: p
+    })
+}
+
+//删除
+export const reqseckDel = (id) => {
+    console.log(id);
+    return axios({
+        url: baseUrl + "/api/seckdelete",
+        method: "post",
+        data: qs.stringify({
+            id
+        })
+    })
+}
+
+//详情
+export const reqseckDetail = id => {
+    return axios({
+        url: baseUrl + "/api/seckinfo",
+        method: "get",
+        params: {
+            id: id
+        }
+    })
+}
+
+
+
+//修改
+export const reqseckUpdate = (user) => {
+
+        return axios({
+            url: baseUrl + "/api/seckedit",
+            method: "post",
+            data: qs.stringify(user)
+        })
+    }
+    //秒杀活动
